@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Location Tracker</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            padding: 20px;
+        }
+        
+        #map {
+            height: 70vh;
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .status {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #4CAF50;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin-right: 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .flex {
+            display: flex;
+            align-items: center;
+        }
+        
+        .coordinates {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Bus Live Location</h1>
+    </div>
+    
+    <div class="container">
+        <div id="map"></div>
+        
+        <div class="controls">
+            <button id="trackBtn">Start Tracking</button>
+            <div class="flex">
+                <div class="loader" id="loader"></div>
+                <span id="statusText">Ready to track</span>
+            </div>
+        </div>
+        
+        <div class="coordinates" id="coordinates">
+            Latitude: --<br>
+            Longitude: --
+        </div>
+    </div>
+
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.1/firebase-app-compat.min.js"></script>
+    <!-- Firebase Database -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.1/firebase-database-compat.min.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    
+    <script>
+        // Your Firebase configuration
+        // Replace these with your actual Firebase project details when ready
+        const firebaseConfig = {
+
+            // apiKey: "AIzaSyD4ag1ditn5XuUQvPLnHdSJPgvWApe1jNQ",
+            // authDomain: "bus-management-yogi.firebaseapp.com",
+            // projectId: "bus-management-yogi",
+            // storageBucket: "bus-management-yogi.firebasestorage.app",
+            // messagingSenderId: "86401600631",
+            // appId: "1:86401600631:web:c849b97981be5c35938a72"
+
+             apiKey: "AIzaSyB5cxsTaQrC9mMlgXh7zyN1OWYWDvEZZr0",
+    authDomain: "college-bus-management-c2a1f.firebaseapp.com",
+    projectId: "college-bus-management-c2a1f",
+    storageBucket: "college-bus-management-c2a1f.firebasestorage.app",
+    messagingSenderId: "180365718829",
+    appId: "1:180365718829:web:9726ebd395f10352e20fa4",
+    measurementId: "G-C58S70M6LC"
+    
+            // apiKey: "YOUR_API_KEY",
+            // authDomain: "YOUR_AUTH_DOMAIN",
+            // databaseURL: "YOUR_DATABASE_URL",
+            // projectId: "YOUR_PROJECT_ID",
+            // storageBucket: "YOUR_STORAGE_BUCKET",
+            // messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            // appId: "YOUR_APP_ID"
+        };
+        
+        // Initialize Firebase (uncomment when you have your Firebase details)
+        // firebase.initializeApp(firebaseConfig);
+        // const database = firebase.database();
+        
+        // DOM elements
+        const trackBtn = document.getElementById('trackBtn');
+        const statusText = document.getElementById('statusText');
+        const loader = document.getElementById('loader');
+        const coordinatesDiv = document.getElementById('coordinates');
+        
+        // Initialize the map with a default view
+        const map = L.map('map').setView([0, 0], 2);
+        
+        // Add OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Current position marker
+        let marker;
+        let watchId;
+        let isTracking = false;
+        
+        // Function to update marker position
+        function updatePosition(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const accuracy = position.coords.accuracy;
+            
+            // Update coordinates display
+            coordinatesDiv.innerHTML = `
+                Latitude: ${lat.toFixed(6)}<br>
+                Longitude: ${lng.toFixed(6)}<br>
+                Accuracy: ${accuracy.toFixed(2)} meters
+            `;
+            
+            // If marker exists, update its position, otherwise create a new one
+            if (marker) {
+                marker.setLatLng([lat, lng]);
+            } else {
+                marker = L.marker([lat, lng]).addTo(map);
+                // Create accuracy circle
+                if (!window.accuracyCircle) {
+                    window.accuracyCircle = L.circle([lat, lng], {
+                        radius: accuracy,
+                        color: '#4CAF50',
+                        fillColor: '#4CAF50',
+                        fillOpacity: 0.1
+                    }).addTo(map);
+                } else {
+                    window.accuracyCircle.setLatLng([lat, lng]);
+                    window.accuracyCircle.setRadius(accuracy);
+                }
+            }
+            
+            // Center map on the new position
+            map.setView([lat, lng], 16);
+            
+            // Save location to Firebase if initialized (uncomment when Firebase is set up)
+            // saveLocationToFirebase(lat, lng, accuracy);
+        }
+        
+        // Function to save location to Firebase
+        function saveLocationToFirebase(lat, lng, accuracy) {
+            // Get current timestamp
+            const timestamp = new Date().getTime();
+            
+            // Create a unique ID for this location update
+            const locationId = 'loc_' + timestamp;
+            
+            // Save to Firebase
+            database.ref('locations/' + locationId).set({
+                latitude: lat,
+                longitude: lng,
+                accuracy: accuracy,
+                timestamp: timestamp
+            });
+        }
+        
+        // Function to handle errors
+        function handleError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    statusText.textContent = "User denied geolocation permission.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    statusText.textContent = "Location information is unavailable.";
+                    break;
+                case error.TIMEOUT:
+                    statusText.textContent = "Request to get location timed out.";
+                    break;
+                case error.UNKNOWN_ERROR:
+                    statusText.textContent = "An unknown error occurred.";
+                    break;
+            }
+            
+            loader.style.display = 'none';
+            isTracking = false;
+            trackBtn.textContent = 'Start Tracking';
+        }
+        
+        // Function to toggle tracking
+        function toggleTracking() {
+            if (!isTracking) {
+                // Start tracking
+                if (navigator.geolocation) {
+                    statusText.textContent = "Acquiring location...";
+                    loader.style.display = 'block';
+                    
+                    // Get initial position
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            updatePosition(position);
+                            
+                            // Start watching position
+                            watchId = navigator.geolocation.watchPosition(
+                                updatePosition,
+                                handleError,
+                                { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 }
+                            );
+                            
+                            isTracking = true;
+                            trackBtn.textContent = 'Stop Tracking';
+                            statusText.textContent = "Tracking active";
+                            loader.style.display = 'none';
+                        },
+                        handleError,
+                        { enableHighAccuracy: true }
+                    );
+                } else {
+                    statusText.textContent = "Geolocation is not supported by this browser.";
+                }
+            } else {
+                // Stop tracking
+                if (watchId) {
+                    navigator.geolocation.clearWatch(watchId);
+                    watchId = null;
+                }
+                
+                isTracking = false;
+                trackBtn.textContent = 'Start Tracking';
+                statusText.textContent = "Tracking stopped";
+                loader.style.display = 'none';
+            }
+        }
+        
+        // Add event listener to button
+        trackBtn.addEventListener('click', toggleTracking);
+    </script>
+</body>
+</html>

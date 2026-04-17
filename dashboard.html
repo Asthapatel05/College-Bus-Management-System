@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Bus Management System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2980b9;
+            --secondary: #2ecc71;
+            --secondary-dark: #27ae60;
+            --accent: #9b59b6;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --danger: #e74c3c;
+            --text-dark: #2c3e50;
+            --text-light: #ffffff;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: var(--text-light);
+            padding: 20px 0;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+        
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .user-name {
+            font-weight: 500;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card h2 i {
+            margin-right: 10px;
+        }
+        
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card i {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .stat-card.routes i {
+            color: var(--secondary);
+        }
+        
+        .stat-card.seats i {
+            color: var(--accent);
+        }
+        
+        .stat-card.passes i {
+            color: var(--danger);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: #777;
+        }
+        
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .two-columns {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        button.secondary {
+            background-color: var(--secondary);
+        }
+        
+        button.secondary:hover {
+            background-color: var(--secondary-dark);
+        }
+        
+        .bus-details-card {
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .bus-item {
+            background-color: var(--light);
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        
+        .bus-item h4 {
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .bus-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .routes-list {
+            margin-top: 20px;
+        }
+        
+        .route-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s;
+        }
+        
+        .route-item:hover {
+            background-color: var(--light);
+        }
+        
+        .route-icon {
+            margin-right: 15px;
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        
+        .route-details {
+            flex-grow: 1;
+        }
+        
+        .route-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .route-meta {
+            font-size: 0.9rem;
+            color: #777;
+        }
+        
+        .route-action {
+            margin-left: 10px;
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        .schedule-item {
+            display: flex;
+            align-items: center;
+            border-left: 3px solid var(--primary);
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            background-color: var(--light);
+        }
+        
+        .schedule-time {
+            font-weight: bold;
+            margin-right: 20px;
+            min-width: 80px;
+        }
+        
+        .schedule-route {
+            flex-grow: 1;
+        }
+        
+        .schedule-status {
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .status-ontime {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .status-delayed {
+            background-color: var(--danger);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-bus"></i> College Bus Management System
+            </div>
+            <div class="user-profile">
+                <div class="user-avatar">S</div>
+                <div class="user-name">Student</div>
+                <button onclick="logout()" class="danger" style="margin-left: 15px; background-color: var(--danger);">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+                <button onclick="goToLocation()" class="danger" style="margin-left: 15px; background-color: var(--secondary);">
+                    <i class="fas" ></i>Live Location
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- Dashboard Overview -->
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <i class="fas fa-bus"></i>
+                <div class="stat-value">12</div>
+                <div class="stat-label">Active Buses</div>
+            </div>
+            
+            <div class="stat-card routes">
+                <i class="fas fa-route"></i>
+                <div class="stat-value">3</div>
+                <div class="stat-label">Routes</div>
+            </div>
+            
+            <div class="stat-card seats">
+                <i class="fas fa-chair"></i>
+                <div class="stat-value">540</div>
+                <div class="stat-label">Total Seats</div>
+            </div>
+            
+            <div class="stat-card passes">
+                <i class="fas fa-id-card"></i>
+                <div class="stat-value">328</div>
+                <div class="stat-label">Active Passes</div>
+            </div>
+        </div>
+        
+        <!-- Main Dashboard Content -->
+        <div class="two-columns">
+            <!-- Route Selection Section -->
+            <div>
+                <div class="card">
+                    <h2><i class="fas fa-route"></i> Your Routes</h2>
+                    <p>Select a route to view details and schedules.</p>
+                    
+                    <div class="form-group">
+                        <label for="routeSelect">Available Routes</label>
+                        <select id="routeSelect">
+                            <option value="">Select a route</option>
+                            <option value="ujjain">College to Ujjain</option>
+                            <option value="dewas">College to Dewas</option>
+                            <option value="indore">College to Indore</option>
+                        </select>
+                    </div>
+                    
+                    <button id="viewRouteBtn" class="secondary">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                    
+                    <div class="routes-list">
+                        <div class="route-item">
+                            <div class="route-icon">
+                                <i class="fas fa-bus"></i>
+                            </div>
+                            <div class="route-details">
+                                <div class="route-name">College to Ujjain</div>
+                                <div class="route-meta">4 buses • 45 min travel time</div>
+                            </div>
+                            <div class="route-action">
+                                <button class="secondary">View</button>
+                            </div>
+                        </div>
+                        
+                        <div class="route-item">
+                            <div class="route-icon">
+                                <i class="fas fa-bus"></i>
+                            </div>
+                            <div class="route-details">
+                                <div class="route-name">College to Dewas</div>
+                                <div class="route-meta">3 buses • 30 min travel time</div>
+                            </div>
+                            <div class="route-action">
+                                <button class="secondary">View</button>
+                            </div>
+                        </div>
+                        
+                        <div class="route-item">
+                            <div class="route-icon">
+                                <i class="fas fa-bus"></i>
+                            </div>
+                            <div class="route-details">
+                                <div class="route-name">College to Indore</div>
+                                <div class="route-meta">5 buses • 60 min travel time</div>
+                            </div>
+                            <div class="route-action">
+                                <button class="secondary">View</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2><i class="fas fa-calendar-alt"></i> Today's Schedule</h2>
+                    
+                    <div class="schedule-item">
+                        <div class="schedule-time">08:30 AM</div>
+                        <div class="schedule-route">College to Ujjain</div>
+                        <div class="schedule-status status-ontime">On Time</div>
+                    </div>
+                    
+                    <div class="schedule-item">
+                        <div class="schedule-time">09:15 AM</div>
+                        <div class="schedule-route">College to Dewas</div>
+                        <div class="schedule-status status-ontime">On Time</div>
+                    </div>
+                    
+                    <div class="schedule-item">
+                        <div class="schedule-time">10:00 AM</div>
+                        <div class="schedule-route">College to Indore</div>
+                        <div class="schedule-status status-delayed">Delayed</div>
+                    </div>
+                    
+                    <div class="schedule-item">
+                        <div class="schedule-time">04:30 PM</div>
+                        <div class="schedule-route">Ujjain to College</div>
+                        <div class="schedule-status status-ontime">On Time</div>
+                    </div>
+                    
+                    <div class="schedule-item">
+                        <div class="schedule-time">05:15 PM</div>
+                        <div class="schedule-route">Dewas to College</div>
+                        <div class="schedule-status status-ontime">On Time</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bus Details Section -->
+            <div>
+                <div class="card bus-details-card">
+                    <h2><i class="fas fa-info-circle"></i> Bus Details</h2>
+                    
+                    <div id="busInfo">
+                        <div class="bus-item">
+                            <h4>Bus MP09-1234 (Ujjain Route)</h4>
+                            <div class="bus-meta">
+                                <span>Departure: 8:30 AM</span>
+                                <span>Arrival: 9:15 AM</span>
+                            </div>
+                            <div class="bus-meta">
+                                <span>Capacity: 45 seats</span>
+                                <span>Available: <span class="badge">12</span></span>
+                            </div>
+                        </div>
+                        
+                        <div class="bus-item">
+                            <h4>Bus MP09-5678 (Ujjain Route)</h4>
+                            <div class="bus-meta">
+                                <span>Departure: 4:30 PM</span>
+                                <span>Arrival: 5:15 PM</span>
+                            </div>
+                            <div class="bus-meta">
+                                <span>Capacity: 45 seats</span>
+                                <span>Available: <span class="badge">8</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2><i class="fas fa-chart-line"></i> Occupancy Trends</h2>
+                    <p>Weekly bus occupancy rates for your routes.</p>
+                    
+                    <div class="chart-container">
+                        <!-- This would be replaced with a real chart in a production app -->
+                        <img src="/api/placeholder/600/300" alt="Bus Occupancy Chart" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2><i class="fas fa-bell"></i> Notifications</h2>
+                    
+                    <div class="bus-item">
+                        <h4>Route Change Notice</h4>
+                        <p>The Indore route will be diverted via Ring Road starting next week due to construction.</p>
+                        <div class="bus-meta">
+                            <span>Posted: May 5, 2025</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bus-item">
+                        <h4>Holiday Schedule</h4>
+                        <p>Limited bus service will be available during the upcoming college festival on May 15-17.</p>
+                        <div class="bus-meta">
+                            <span>Posted: May 2, 2025</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
+    <!-- Firebase config and app initialization -->
+    <script src="firebase-config.js"></script>
+    
+    <script>
+        // Initialize variables to store bus data
+        let busData = {};
+        let userData = null;
+        let routeDetails = {
+            "ujjain": {
+                name: "College to Ujjain",
+                travel_time: "45 min",
+                buses: 4
+            },
+            "dewas": {
+                name: "College to Dewas",
+                travel_time: "30 min",
+                buses: 3
+            },
+            "indore": {
+                name: "College to Indore",
+                travel_time: "60 min",
+                buses: 5
+            }
+        };
+
+        // Check if user is authenticated and redirect if not
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get references to Firebase services
+            const auth = firebase.auth();
+            const db = firebase.firestore();
+            
+            // Auth state listener
+            auth.onAuthStateChanged(async function(user) {
+                if (!user) {
+                    // Redirect to login page if not authenticated
+                    console.log("No user is signed in, redirecting to login page");
+                    window.location.href = "index.html";
+                    return;
+                }
+                
+                try {
+                    // Get user data from Firestore
+                    const userDoc = await db.collection('users').doc(user.uid).get();
+                    if (userDoc.exists) {
+                        userData = userDoc.data();
+                        
+                        // Update user profile in header
+                        const headerUserName = document.querySelector('.user-name');
+                        const userAvatar = document.querySelector('.user-avatar');
+                        
+                        if (headerUserName && userData.name) {
+                            headerUserName.textContent = userData.name;
+                        }
+                        
+                        if (userAvatar && userData.name) {
+                            userAvatar.textContent = userData.name.charAt(0).toUpperCase();
+                        }
+                        
+                        // Load bus data for routes
+                        loadBusData();
+                    }
+                } catch (error) {
+                    console.error("Error getting user document:", error);
+                }
+            });
+            
+            // Setup route interactions
+            setupRouteInteractions();
+        });
+        
+        // Function to load bus data from Firestore
+        async function loadBusData() {
+            try {
+                const db = firebase.firestore();
+                const busesSnapshot = await db.collection('buses').get();
+                
+                busesSnapshot.forEach(doc => {
+                    const bus = doc.data();
+                    if (!busData[bus.route]) {
+                        busData[bus.route] = [];
+                    }
+                    busData[bus.route].push({
+                        id: doc.id,
+                        ...bus
+                    });
+                });
+                
+                console.log("Bus data loaded:", busData);
+            } catch (error) {
+                console.error("Error loading bus data:", error);
+            }
+        }
+        
+        // Setup route interactions
+        function setupRouteInteractions() {
+            // Route item click handlers
+            document.querySelectorAll('.route-item button').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Get route from parent element's data or class
+                    const routeItem = this.closest('.route-item');
+                    const routeName = routeItem.querySelector('.route-name').textContent;
+                    
+                    // Find route key by name
+                    let routeKey = null;
+                    for (const [key, details] of Object.entries(routeDetails)) {
+                        if (details.name === routeName) {
+                            routeKey = key;
+                            break;
+                        }
+                    }
+                    
+                    if (routeKey) {
+                        displayBusDetails(routeKey);
+                        
+                        // Highlight the selected route
+                        document.querySelectorAll('.route-item').forEach(item => {
+                            item.style.backgroundColor = '';
+                        });
+                        routeItem.style.backgroundColor = '#e3f2fd';
+                    }
+                });
+            });
+            
+            // Route select dropdown interaction
+            document.getElementById('viewRouteBtn').addEventListener('click', function() {
+                const route = document.getElementById('routeSelect').value;
+                if (route) {
+                    displayBusDetails(route);
+                } else {
+                    alert('Please select a route first.');
+                }
+            });
+        }
+        
+        // Function to display bus details for a route
+        function displayBusDetails(routeKey) {
+            const busInfo = document.getElementById('busInfo');
+            
+            if (!busInfo) return;
+            
+            // Clear existing content
+            busInfo.innerHTML = '';
+            
+            // Check if user has a valid pass
+            const hasValidPass = userData && userData.passId;
+            
+            if (!hasValidPass) {
+                busInfo.innerHTML = `
+                    <div class="bus-item">
+                        <h4>Pass Required</h4>
+                        <p><i class="fas fa-exclamation-triangle"></i> You need a valid pass to view detailed bus information.</p>
+                        <p>Please contact the administration office to get a bus pass.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Get route details
+            const route = routeDetails[routeKey];
+            
+            if (!route) {
+                busInfo.innerHTML = '<p>Route information not available.</p>';
+                return;
+            }
+            
+            // If we have bus data from Firestore
+            if (busData[routeKey] && busData[routeKey].length > 0) {
+                busData[routeKey].forEach(bus => {
+                    busInfo.innerHTML += `
+                        <div class="bus-item">
+                            <h4>Bus ${bus.busNumber} (${route.name})</h4>
+                            <div class="bus-meta">
+                                <span>Departure: ${bus.departureTime}</span>
+                                <span>Arrival: ${bus.arrivalTime}</span>
+                            </div>
+                            <div class="bus-meta">
+                                <span>Capacity: ${bus.capacity} seats</span>
+                                <span>Available: <span class="badge">${Math.floor(Math.random() * 20)}</span></span>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                // Use sample data if no Firestore data
+                busInfo.innerHTML = `
+                    <div class="bus-item">
+                        <h4>Bus MP09-1234 (${route.name})</h4>
+                        <div class="bus-meta">
+                            <span>Departure: 8:30 AM</span>
+                            <span>Arrival: 9:15 AM</span>
+                        </div>
+                        <div class="bus-meta">
+                            <span>Capacity: 45 seats</span>
+                            <span>Available: <span class="badge">12</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="bus-item">
+                        <h4>Bus MP09-5678 (${route.name})</h4>
+                        <div class="bus-meta">
+                            <span>Departure: 4:30 PM</span>
+                            <span>Arrival: 5:15 PM</span>
+                        </div>
+                        <div class="bus-meta">
+                            <span>Capacity: 45 seats</span>
+                            <span>Available: <span class="badge">8</span></span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Add logout functionality
+        function logout() {
+            firebase.auth().signOut().then(() => {
+                window.location.href = "index.html";
+            }).catch((error) => {
+                console.error("Error signing out:", error);
+            });
+        }
+
+         function goToLocation() {
+            window.location.href = "Location.html";
+        }
+    </script>
+</body>
+</html>

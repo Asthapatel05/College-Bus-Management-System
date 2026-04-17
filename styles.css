@@ -1,0 +1,303 @@
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Reset and Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background-color: #f5f8fa;
+    color: #2c3e50;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+h1, h2, h3, h4 {
+    color: #1e3a8a;
+    margin-bottom: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin: 30px 0;
+    font-size: 2.5rem;
+    color: #1e3a8a;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Card Styles */
+.card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    margin-bottom: 30px;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Form Styles */
+input, select, button {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border: 1px solid #dcdfe6;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+input:focus, select:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+.btn-success {
+    background-color: #2ecc71;
+}
+
+.btn-success:hover {
+    background-color: #27ae60;
+}
+
+.btn-group {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-group button {
+    flex: 1;
+}
+
+/* Auth Section */
+#authSection {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+}
+
+#loginForm, #signupForm {
+    flex: 1;
+    min-width: 300px;
+}
+
+/* Dashboard Styles */
+#studentDashboard, #adminDashboard {
+    margin-top: 30px;
+}
+
+#routeSelection, #busManagement, #passManagement {
+    margin-bottom: 30px;
+}
+
+#busDetails, #adminBusList {
+    margin-top: 25px;
+}
+
+/* Bus List Styles */
+#busInfo ul, #adminBusInfo ul {
+    list-style: none;
+}
+
+#busInfo li, #adminBusInfo li {
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    background-color: #f8f9fa;
+    border-left: 4px solid #3498db;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+th {
+    background-color: #3498db;
+    color: white;
+    padding: 12px 15px;
+}
+
+td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #dcdfe6;
+}
+
+tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+tr:hover {
+    background-color: #edf2f7;
+}
+
+/* Action Buttons */
+.action-btn {
+    padding: 8px 12px;
+    width: auto;
+    margin-right: 5px;
+    margin-bottom: 0;
+}
+
+.edit-btn {
+    background-color: #f39c12;
+}
+
+.edit-btn:hover {
+    background-color: #d35400;
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+}
+
+/* Messages */
+.message {
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.error-message {
+    background-color: #fdecea;
+    color: #e74c3c;
+    border-left: 4px solid #e74c3c;
+}
+
+.success-message {
+    background-color: #eafaf1;
+    color: #2ecc71;
+    border-left: 4px solid #2ecc71;
+}
+
+.info-message {
+    background-color: #eaf2fd;
+    color: #3498db;
+    border-left: 4px solid #3498db;
+}
+
+#noPassMsg {
+    background-color: #fef9e7;
+    color: #f39c12;
+    border-left: 4px solid #f39c12;
+    padding: 15px;
+    border-radius: 6px;
+}
+
+/* Header & Logo */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1e3a8a;
+    text-decoration: none;
+}
+
+.logo span {
+    color: #3498db;
+}
+
+/* Logout Button */
+#logoutSection {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+#logoutBtn {
+    width: auto;
+    background-color: #e74c3c;
+    margin-bottom: 0;
+}
+
+/* Welcome Section */
+.welcome-section {
+    background-image: linear-gradient(135deg, #3498db, #1e3a8a);
+    color: white;
+    padding: 40px 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.welcome-section h2 {
+    color: white;
+    margin-bottom: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #authSection {
+        flex-direction: column;
+    }
+    
+    table {
+        font-size: 14px;
+    }
+    
+    th, td {
+        padding: 8px 10px;
+    }
+    
+    .action-btn {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card, #busDetails, #adminBusList {
+    animation: fadeIn 0.5s ease-out forwards;
+}
